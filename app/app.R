@@ -70,7 +70,7 @@ server <- function(input, output) {
                            date >= as_date(input$date[1]) & 
                            date <= as_date(input$date[2]))
         plot <- ggplot(data=plottable, mapping = aes(date,cum_sum, col=countriesAndTerritories))+
-            labs(x="Date", y=" Cummlative cases")+
+            labs(x="Date", y=" Cummlative cases", col = "Countries")+
             theme_classic()+
             geom_line()+
             geom_point()
@@ -81,7 +81,7 @@ server <- function(input, output) {
                            date >= as_date(input$date[1]) & 
                                date <= as_date(input$date[2]))
         plot <- ggplot(data=plottable, mapping = aes(date,cases, col=countriesAndTerritories))+
-            labs(x="Date", y="Cases")+
+            labs(x="Date", y="Cases", col = "Countries")+
             theme_classic()+
             geom_line()+
             geom_point()
