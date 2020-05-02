@@ -23,29 +23,30 @@ ui <- fluidPage(
     h2("Date retrieval"),
     p("The EEDC publishes data on COVID19 daily. Files were imported from EEDC.", a(href = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")),
     br(),
-    
-    h3("Plot of cummulative cases per day"),
-    sidebarLayout(
-        sidebarPanel = sidebarPanel(
-            strong("Choose countries"),
-            checkboxGroupInput("countries", "",
-                               choices = c("China", 
-                                           "United_States_of_America",
-                                           "Germany", 
-                                           "Italy",
-                                           "Japan",
-                                           "India")),
-            strong("Choose date range"),
-            dateInput("date", "", 
-                      min=ymd("2020-01-01"),
-                      max=ymd(today()))
-            
-            
-        ),
-        mainPanel = mainPanel(
-            plotOutput("plotout")
-        )
+
+    verticalLayout(
+        strong("Choose countries"),
+        checkboxGroupInput("countries", "", inline = TRUE, 
+                           choices = c("China", 
+                                       "United_States_of_America",
+                                       "Germany", 
+                                       "Italy",
+                                       "Japan",
+                                       "India")),
+        strong("Choose date range"),
+        dateRangeInput("date", "", 
+                  start = ymd("2020-01-01"),
+                  end = ymd(today()),
+                  min=ymd("2020-01-01"),
+                  max=ymd(today()))
+    ), 
+    mainPanel(
+        h3("Plot of cummulative cases per day"),
+        plotOutput("plotout1"),
+        h3("Plot of cases per day"),
+        plotOutput("plotout2")
     )
+    
 )
 
 # Define server logic required to draw a histogram
@@ -64,12 +65,26 @@ server <- function(input, output) {
         ungroup()
    
     output$date <- renderText ({paste('',today())})
-    output$plotout <- renderPlot({
-        plottable<- filter(cumalativetable, countriesAndTerritories %in% input$countries)
+    output$plotout1 <- renderPlot({
+        plottable<- filter(cumalativetable, countriesAndTerritories %in% input$countries,
+                           date >= as_date(input$date[1]) & 
+                           date <= as_date(input$date[2]))
         plot <- ggplot(data=plottable, mapping = aes(date,cum_sum, col=countriesAndTerritories))+
+            labs(x="Date", y=" Cummlative cases")+
+            theme_classic()+
             geom_line()+
-            geom_point()+
-            geom_hline(yintercept = 10000)
+            geom_point()
+        plot
+    })
+    output$plotout2 <- renderPlot({
+        plottable<- filter(cumalativetable, countriesAndTerritories %in% input$countries,
+                           date >= as_date(input$date[1]) & 
+                               date <= as_date(input$date[2]))
+        plot <- ggplot(data=plottable, mapping = aes(date,cases, col=countriesAndTerritories))+
+            labs(x="Date", y="Cases")+
+            theme_classic()+
+            geom_line()+
+            geom_point()
         plot
     })
    
