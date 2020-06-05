@@ -11,6 +11,8 @@ library(shiny)
 library(lubridate)
 library(tidyverse)
 
+COVID19 <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
@@ -26,13 +28,8 @@ ui <- fluidPage(
 
     verticalLayout(
         strong("Choose countries"),
-        checkboxGroupInput("countries", "", inline = TRUE, 
-                           choices = c("China", 
-                                       "United_States_of_America",
-                                       "Germany", 
-                                       "Italy",
-                                       "Japan",
-                                       "India")),
+        selectizeInput("countries", "", multiple = TRUE,
+                           choices =  COVID19$countriesAndTerritories),
         strong("Choose date range"),
         dateRangeInput("date", "", 
                   start = ymd("2020-01-01"),
@@ -40,19 +37,18 @@ ui <- fluidPage(
                   min=ymd("2020-01-01"),
                   max=ymd(today()))
     ), 
-    mainPanel(
+    
         h3("Plot of cummulative cases per day"),
         plotOutput("plotout1"),
         h3("Plot of cases per day"),
         plotOutput("plotout2")
-    )
+    
     
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    COVID19 <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
     cumalativetable<-COVID19 %>%
         select(dateRep, cases, geoId, countriesAndTerritories, popData2018)%>%
         pivot_wider(names_from = dateRep, values_from = cases, values_fill = list(cases=0))%>% #note the list

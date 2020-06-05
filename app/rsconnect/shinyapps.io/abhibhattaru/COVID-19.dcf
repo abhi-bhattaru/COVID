@@ -5,8 +5,8 @@ account: abhibhattaru
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2230395
-bundleId: 3094452
+bundleId: 3230167
 url: https://abhibhattaru.shinyapps.io/COVID-19/
-when: 1588446339.65341
+when: 1591310897.90655
 asMultiple: FALSE
 asStatic: FALSE
